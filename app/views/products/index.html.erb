@@ -1,16 +1,19 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <p id="notice"><%= notice %></p>
 <h1>Products</h1>
-
+<%#= link_to ‘DOWNLOAD PDF’, product_path(format: :pdf) %>
 <%= select_tag 'order', options_for_select(%w[Newest Cheapest Expensive], :selected => @order) %>
 
 <table>
   <thead>
   <tr>
+    <th>Product</th>
     <th>Name</th>
     <th>Price</th>
-    <th colspan="3">Actions</th>
-    <th colspan="2">Sub Product</th>
+    <th colspan="2"></th>
+    <th>Sub Product</th>
+    <th></th>
+    <th colspan="2">Actions</th>
   </tr>
   </thead>
 
@@ -19,33 +22,33 @@
   </tbody>
 </table>
 <div>
-  Sum = <span id="sum" >1121</span><br>
-  VAT = <span id="vat">17.5%</span><br>
-  Total Price = <span id = "total_price"/>
+  <div><b>Sum:</b> <span id="sum" >1121</span></div>
+  <div><b>VAT:</b> <span id="vat">17.5%</span><br></div>
+  <div><b>Total Price:</b> <span id = "total_price"/></div>
 </div>
 <br>
-
 <%= link_to 'New Product', new_product_path %>
+
 <script>
     jQuery(document).ready(function() {
         let sum = document.getElementById("sum").innerText;
         if (sum == 0){
-          $('#total_price').value('0.0');
+            document.getElementById("total_price").innerText = '0';
         }else{
-                let sum = document.getElementById("sum").innerText;
-                let vat_total = 0;
-                if (sum != 0){
-                    let diff = sum / 117.5;
-                    let result = 0;
-                    if (diff != 17.5) {
-                        result = (diff + 100) / diff;
-                    }else {
-                        result = diff;
-                    }
-                    let pre_vat_total = result * 100
-                    vat_total = result * 17.5;
+            let sum = document.getElementById("sum").innerText;
+            let vat_total = 0;
+            if (sum != 0){
+                let diff = sum / 117.5;
+                let result = 0;
+                if (diff != 17.5) {
+                    result = (diff + 100) / diff;
+                }else {
+                    result = diff;
                 }
-            $('#total_price').value(vat_total);
+                let pre_vat_total = result * 100
+                vat_total = result * 17.5;
+            }
+            document.getElementById("total_price").innerText = parseFloat(vat_total).toFixed(3);
         }
     });
 

@@ -4,10 +4,35 @@ class ProductsController < ApplicationController
   # GET /products or /products.json
   def index
     @products = Product.newest
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render page_size: 'A4',
+               template: "products/index.html.erb",
+               layout: "pdf.html",
+               orientation: "Landscape",
+               lowquality: true,
+               zoom: 1,
+               dpi: 75
+      end
+    end
   end
 
   # GET /products/1 or /products/1.json
   def show
+    respond_to do |format|
+      format.html
+      format.pdf do
+        render pdf: "Invoice No. #{@product.id}",
+               page_size: 'A4',
+               template: "products/show.html.erb",
+               layout: "pdf.html",
+               orientation: "Landscape",
+               lowquality: true,
+               zoom: 1,
+               dpi: 75
+      end
+    end
   end
 
   # GET /products/new
@@ -22,11 +47,10 @@ class ProductsController < ApplicationController
   # POST /products or /products.json
   def create
     @product = Product.new(product_params)
-
     respond_to do |format|
       if @product.save
         format.html { redirect_to @product, notice: "Product was successfully created." }
-        format.json { render :show, status: :created, location: @product }
+        format.json { render :show, status: :created, location: @products }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @product.errors, status: :unprocessable_entity }
@@ -39,7 +63,7 @@ class ProductsController < ApplicationController
     respond_to do |format|
       if @product.update(product_params)
         format.html { redirect_to @product, notice: "Product was successfully updated." }
-        format.json { render :show, status: :ok, location: @product }
+        format.json { render :show, status: :ok, location: @products }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @product.errors, status: :unprocessable_entity }
@@ -57,11 +81,10 @@ class ProductsController < ApplicationController
   end
 
   def sort
-    Rails.logger.debug "parms = #{params.inspect}"
     @order = params[:sort_by]
-    if @order == 'Cheapest'
+    if @order.eql?('Cheapest')
       @products = Product.cheapest
-    elsif @order == 'Expensive'
+    elsif @order.eql?('Expensive')
        @products = Product.expensive
     else
       @products = Product.newest
@@ -79,7 +102,7 @@ class ProductsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def product_params
-      params.require(:product).permit(:name, :price, sub_products_attributes: [:id, :name, :price, :_destroy])
+      params.require(:product).permit(:name, :price, :check_value, sub_products_attributes: [:id, :name, :price, :check_value, :_destroy])
     end
 
 end
