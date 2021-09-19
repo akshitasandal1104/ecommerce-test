@@ -1,0 +1,66 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<p id="notice"><%= notice %></p>
+<h1>Products</h1>
+
+<%= select_tag 'order', options_for_select(%w[Newest Cheapest Expensive], :selected => @order) %>
+
+<table>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Price</th>
+    <th colspan="3">Actions</th>
+    <th colspan="2">Sub Product</th>
+  </tr>
+  </thead>
+
+  <tbody id="product_list">
+  <%= render "products/product_list" %>
+  </tbody>
+</table>
+<div>
+  Sum = <span id="sum" >1121</span><br>
+  VAT = <span id="vat">17.5%</span><br>
+  Total Price = <span id = "total_price"/>
+</div>
+<br>
+
+<%= link_to 'New Product', new_product_path %>
+<script>
+    jQuery(document).ready(function() {
+        let sum = document.getElementById("sum").innerText;
+        if (sum == 0){
+          $('#total_price').value('0.0');
+        }else{
+                let sum = document.getElementById("sum").innerText;
+                let vat_total = 0;
+                if (sum != 0){
+                    let diff = sum / 117.5;
+                    let result = 0;
+                    if (diff != 17.5) {
+                        result = (diff + 100) / diff;
+                    }else {
+                        result = diff;
+                    }
+                    let pre_vat_total = result * 100
+                    vat_total = result * 17.5;
+                }
+            $('#total_price').value(vat_total);
+        }
+    });
+
+    $('#order').on('change', function() {
+        $.post({
+            url: '/products/sort',
+            data: {sort_by: $(this).val()},
+            success: function (data) {
+                $("#product_list").html(data);
+                $("#total_price").html("0");
+            },
+            error: function (error) {
+                console.log('Error ' + error);
+            },
+        });
+    })
+
+</script>

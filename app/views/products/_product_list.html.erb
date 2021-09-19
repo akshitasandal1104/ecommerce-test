@@ -1,0 +1,37 @@
+<% @products.each do |product| %>
+  <%= hidden_field_tag("product_value_#{product.id}", product.price.to_f) %>
+  <tr>
+    <td><%= check_box_tag("product_#{product.id}", value = "1", checked = false, options = {}) %></td>
+    <td><%= product.name %></td>
+    <td><%= product.price %></td>
+    <td><%= link_to 'Show', product %></td>
+    <td><%= link_to 'Edit', edit_product_path(product) %></td>
+    <td><%= link_to 'Destroy', product, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td>
+      <table>
+        <% product.sub_products.each do |sub_product| %>
+          <tr>
+            <td><%= check_box_tag("sub_product_#{product.id}", value = "1", checked = false, options = {}) %></td>
+            <td><%= sub_product.name %></td>
+            <td><%= sub_product.price %></td>
+          </tr>
+        <% end %>
+      </table>
+    </td>
+  </tr>
+
+<script>
+    $('#product_<%= product.id %>').change(function() {
+<!--        $("#total_price").val(Number($("#total_price").val()) + <%#= product.price.to_f %>);-->
+       if($(this).is(":checked")){
+           $('#sub_product_<%= product.id %>').prop('checked', true);
+           $("#total_price").html(Number($("#total_price").html()) + <%= product.price.to_f %>);
+       } else {
+           $('#sub_product_<%= product.id %>').prop('checked', false);
+           $("#total_price").html(Number($("#total_price").html()) - <%= product.price.to_f %>);
+       }
+    });
+</script>
+<% end %>
+
+
